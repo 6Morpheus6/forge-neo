@@ -23,6 +23,15 @@ module.exports = {
       }
     },
     {
+      when: "{{platform === 'linux'}}",
+      method: "shell.run",
+      params: {
+        venv: "venv",
+        path: "app",
+        message: "uv pip install svglib==1.5.1"
+      }
+    },
+    {
       method: "shell.run",
       params: {
         message: "{{platform === 'win32' ? 'webui-user.bat' : 'bash webui.sh -f'}}",
