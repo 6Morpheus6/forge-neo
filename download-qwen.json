@@ -17,7 +17,7 @@
     {
       "method": "fs.download",
       "params": {
-        "uri": "huggingface-cli download nunchaku-tech/nunchaku-qwen-image svdq-int4_r32-qwen-image-lightningv1.1-8steps.safetensors --local-dir app/models/Stable-diffusion",
+        "uri": "https://huggingface.co/nunchaku-tech/nunchaku-qwen-image/resolve/main/svdq-int4_r32-qwen-image-lightningv1.1-8steps.safetensors?download=true",
         "dir": "app/models/Stable-diffusion"
       }
     }
