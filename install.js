@@ -26,6 +26,7 @@ module.exports = {
       when: "{{platform === 'linux'}}",
       method: "shell.run",
       params: {
+        venv_python: "3.11",
         venv: "venv",
         path: "app",
         message: "uv pip install svglib==1.5.1"
@@ -34,11 +35,13 @@ module.exports = {
     {
       method: "shell.run",
       params: {
-        message: "{{platform === 'win32' ? 'webui-user.bat' : 'bash webui.sh -f'}}",
         env: {
           SD_WEBUI_RESTARTING: 1,
         },
+        venv_python: "3.11",
+        venv: "venv",
         path: "app",
+        message: "{{platform === 'win32' ? 'webui-user.bat' : 'bash webui.sh -f'}}",
         on: [{ "event": "/http:\/\/[0-9.:]+/", "kill": true }]
       }
     },
@@ -47,6 +50,7 @@ module.exports = {
       params: {
         uri: "torch.js",
         params: {
+          venv_python: "3.11",
           venv: "venv",
           path: "app",
           xformers: true,
@@ -58,6 +62,7 @@ module.exports = {
     {
       method: "shell.run",
       params: {
+        venv_python: "3.11",
         venv: "venv",
         path: "app",
         message: "uv pip install hf-xet"
@@ -93,7 +98,7 @@ module.exports = {
       method: "shell.run",
       params: {
         message: [
-          "huggingface-cli download lllyasviel/flux1-dev-bnb-nf4 flux1-dev-bnb-nf4-v2.safetensors --local-dir app/models/Stable-diffusion"
+          "hf download lllyasviel/flux1-dev-bnb-nf4 flux1-dev-bnb-nf4-v2.safetensors --local-dir app/models/Stable-diffusion"
         ]
       }
     },
