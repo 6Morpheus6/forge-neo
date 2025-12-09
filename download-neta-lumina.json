@@ -1,0 +1,11 @@
+{
+  "run": [
+    {
+      "method": "fs.download",
+      "params": {
+        "uri": "https://huggingface.co/neta-art/Neta-Lumina/resolve/main/neta-lumina-v1.0-all-in-one.safetensors?download=true",
+        "dir": "app/models/Stable-diffusion"
+      }
+    }
+  ]
+}

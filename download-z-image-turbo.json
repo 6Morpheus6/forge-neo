@@ -1,0 +1,25 @@
+{
+  "run": [
+    {
+      "method": "fs.download",
+      "params": {
+        "uri": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors?download=true",
+        "dir": "app/models/vae"
+      }
+    },
+    {
+      "method": "fs.download",
+      "params": {
+        "uri": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors?download=true",
+        "dir": "app/models/text_encoder"
+      }
+    },
+    {
+      "method": "fs.download",
+      "params": {
+        "uri": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors?download=true",
+        "dir": "app/models/Stable-diffusion"
+      }
+    }
+  ]
+}

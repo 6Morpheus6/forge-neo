@@ -1,0 +1,11 @@
+{
+  "run": [
+    {
+      "method": "fs.download",
+      "params": {
+        "uri": "https://huggingface.co/duongve/NetaYume-Lumina-Image-2.0/resolve/main/NetaYumev35_pretrained_all_in_one.safetensors?download=true",
+        "dir": "app/models/Stable-diffusion"
+      }
+    }
+  ]
+}
