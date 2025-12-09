@@ -1,4 +1,10 @@
 module.exports = {
+  requires: {
+    bundle: "ai",
+  },
+  requires: {
+    bundle: "ai",
+  },
   run: [
     {
       method: "shell.run",
