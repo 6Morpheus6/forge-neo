@@ -2,9 +2,6 @@ module.exports = {
   requires: {
     bundle: "ai",
   },
-  requires: {
-    bundle: "ai",
-  },
   run: [
     {
       method: "shell.run",
@@ -35,7 +32,7 @@ module.exports = {
         venv_python: "3.11",
         venv: "venv",
         path: "app",
-        message: "uv pip install svglib==1.5.1"
+        message: "uv pip install pip svglib==1.5.1"
       }
     },
     {
@@ -71,7 +68,7 @@ module.exports = {
         venv_python: "3.11",
         venv: "venv",
         path: "app",
-        message: "uv pip install hf-xet"
+        message: "uv pip install pip hf-xet"
       }
     },
     {
