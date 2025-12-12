@@ -36,19 +36,6 @@ module.exports = {
       }
     },
     {
-      method: "shell.run",
-      params: {
-        env: {
-          SD_WEBUI_RESTARTING: 1,
-        },
-        venv_python: "3.11",
-        venv: "venv",
-        path: "app",
-        message: "{{platform === 'win32' ? 'webui-user.bat' : 'bash webui.sh -f'}}",
-        on: [{ "event": "/http:\/\/[0-9.:]+/", "kill": true }]
-      }
-    },
-    {
       method: "script.start",
       params: {
         uri: "torch.js",
@@ -60,6 +47,19 @@ module.exports = {
           triton: true,
           sageattention: true
         }
+      }
+    },
+    {
+      method: "shell.run",
+      params: {
+        env: {
+          SD_WEBUI_RESTARTING: 1,
+        },
+        venv_python: "3.11",
+        venv: "venv",
+        path: "app",
+        message: "{{platform === 'win32' ? 'webui-user.bat' : 'bash webui.sh -f'}}",
+        on: [{ "event": "/http:\/\/[0-9.:]+/", "kill": true }]
       }
     },
     {
