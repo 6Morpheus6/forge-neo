@@ -50,6 +50,13 @@ module.exports = {
       }
     },
     {
+      method: "script.start",
+      params: {
+        "uri": "download-sd15.json",
+        "dir": "app/models/Stable-diffusion",
+      },
+    },
+    {
       method: "shell.run",
       params: {
         env: {
