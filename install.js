@@ -29,7 +29,7 @@ module.exports = {
       when: "{{platform === 'linux'}}",
       method: "shell.run",
       params: {
-        venv_python: "3.11",
+        venv_python: "3.13",
         venv: "venv",
         path: "app",
         message: "uv pip install pip svglib==1.5.1"
@@ -40,7 +40,7 @@ module.exports = {
       params: {
         uri: "torch.js",
         params: {
-          venv_python: "3.11",
+          venv_python: "3.13",
           venv: "venv",
           path: "app",
           xformers: true,
@@ -62,7 +62,7 @@ module.exports = {
         env: {
           SD_WEBUI_RESTARTING: 1,
         },
-        venv_python: "3.11",
+        venv_python: "3.13",
         venv: "venv",
         path: "app",
         message: "{{platform === 'win32' ? 'webui-user.bat' : 'bash webui.sh -f'}}",
@@ -72,7 +72,7 @@ module.exports = {
     {
       method: "shell.run",
       params: {
-        venv_python: "3.11",
+        venv_python: "3.13",
         venv: "venv",
         path: "app",
         message: "uv pip install pip hf-xet"
