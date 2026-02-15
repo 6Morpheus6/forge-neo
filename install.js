@@ -24,12 +24,22 @@ module.exports = {
       params: {
         message: "cp webui.sh webui-user.sh app/",
       }
+    },{
+      method: "shell.run",
+      params: {
+        venv_python: "3.11",
+        venv: "venv",
+        path: "app",
+        message: [
+          "uv pip install wheel setuptools==69.5.1 pip==25.3",
+          "uv pip install https://github.com/openai/CLIP/archive/d50d76daa670286dd6cacf3bcd80b5e4823fc8e1.zip --no-build-isolation"
+        ]
+      }
     },
     {
       when: "{{platform === 'linux'}}",
       method: "shell.run",
       params: {
-        venv_python: "3.11",
         venv: "venv",
         path: "app",
         message: "uv pip install pip svglib==1.5.1"
@@ -40,7 +50,6 @@ module.exports = {
       params: {
         uri: "torch.js",
         params: {
-          venv_python: "3.11",
           venv: "venv",
           path: "app",
           xformers: true,
@@ -49,21 +58,19 @@ module.exports = {
         }
       }
     },
-    {
+/*     {
       method: "script.start",
       params: {
         "uri": "download-sd15.json",
         "dir": "app/models/Stable-diffusion",
       },
-    },
+    }, */
     {
       method: "shell.run",
       params: {
         env: {
           SD_WEBUI_RESTARTING: 1,
         },
-        venv_python: "3.11",
-        venv: "venv",
         path: "app",
         message: "{{platform === 'win32' ? 'webui-user.bat' : 'bash webui.sh -f'}}",
         on: [{ "event": "/http:\/\/[0-9.:]+/", "kill": true }]
