@@ -13,7 +13,7 @@ module.exports = {
           "uv pip install -U bitsandbytes --force-reinstall --no-deps",
           "uv pip install https://huggingface.co/nunchaku-tech/nunchaku/resolve/main/nunchaku-1.0.2%2Btorch2.7-cp311-cp311-win_amd64.whl",
           "{{args && args.triton ? 'uv pip install triton-windows==3.3.1.post19' : ''}}",
-          "{{args && args.sageattention ? 'uv pip install https://github.com/woct0rdho/SageAttention/releases/download/v2.1.1-windows/sageattention-2.1.1+cu128torch2.7.0-cp311-cp311-win_amd64.whl' : ''}}",
+          "{{args && args.sageattention ? 'uv pip install https://github.com/woct0rdho/SageAttention/releases/download/v2.2.0-windows.post3/sageattention-2.2.0+cu128torch2.7.1.post3-cp39-abi3-win_amd64.whl' : ''}}",
         ]
       },
       "next": null
