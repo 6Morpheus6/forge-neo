@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
-import ctypes
 import json
 import os
 import subprocess
@@ -34,6 +33,7 @@ FORGE_DIR_NAMES = {
     "sd-webui-forge-neo", "sd-webui-forge-classic",
     "stable-diffusion-webui-forge", "forge-neo",
 }
+FORGE_DIR_NAMES_LOWER = {n.lower() for n in FORGE_DIR_NAMES}
 
 SKIP_DIRS = frozenset({
     "Windows", "Program Files", "Program Files (x86)", "$Recycle.Bin",
@@ -277,7 +277,7 @@ def _scan_dir_recursive(
                     comfy_results.append(candidate.resolve())
                     matched = True
                     break
-        if name in FORGE_DIR_NAMES or name.lower() in {n.lower() for n in FORGE_DIR_NAMES}:
+        if name in FORGE_DIR_NAMES or name.lower() in FORGE_DIR_NAMES_LOWER:
             for candidate in (p, p / "app"):
                 if is_forge_neo(candidate):
                     forge_results.append(candidate.resolve())
@@ -331,16 +331,25 @@ def _scan_filesystem() -> tuple[list[Path], list[Path]]:
 # ---------------------------------------------------------------------------
 
 def _ask_path(app_name: str, validator) -> Path | None:
-    for _ in range(3):
-        raw = input(f"  Enter path to {app_name} (or press Enter to skip): ").strip()
+    if app_name == "ComfyUI":
+        hint = "(the folder that contains ComfyUI's 'models' subfolder)"
+    else:
+        hint = "(the folder that contains webui.bat)"
+    print(f"  {hint}")
+    print(f"  Tip: you can drag the folder into this window to paste its path.\n")
+    for attempt in range(3):
+        raw = input(f"  Path to {app_name} (or press Enter to skip): ").strip().strip('"\'')
         if not raw:
             return None
         p = Path(raw)
-        # Also try app/ subfolder
         for candidate in (p, p / "app"):
             if candidate.is_dir() and validator(candidate):
                 return candidate.resolve()
-        print(f"  FAIL Could not verify {app_name} at that path.")
+        remaining = 2 - attempt
+        if remaining > 0:
+            print(f"  FAIL Not a valid {app_name} folder. {remaining} tries left.")
+        else:
+            print(f"  FAIL Not a valid {app_name} folder.")
     return None
 
 # ---------------------------------------------------------------------------
@@ -368,11 +377,14 @@ def _pick(candidates: list[Path], app_name: str) -> Path | None:
     print(f"\n  Multiple {app_name} installations found:")
     for i, c in enumerate(candidates, 1):
         print(f"    [{i}] {c}")
-    choice = input(f"  Select [1-{len(candidates)}]: ").strip()
-    if choice.isdigit():
-        idx = int(choice)
-        if 1 <= idx <= len(candidates):
-            return candidates[idx - 1]
+    for _ in range(3):
+        choice = input(f"  Which one? [1-{len(candidates)}]: ").strip()
+        if choice.isdigit():
+            idx = int(choice)
+            if 1 <= idx <= len(candidates):
+                return candidates[idx - 1]
+        print(f"  Please enter a number between 1 and {len(candidates)}.")
+    print(f"  Using first match: {candidates[0]}")
     return candidates[0]
 
 # ---------------------------------------------------------------------------
@@ -474,11 +486,17 @@ def write_yaml(
     yaml_text, mapping_log = build_yaml(comfyui_root)
 
     _header("Linking model folders:")
+    found_any = False
     for comfy_name, forge_name, exists in mapping_log:
         if exists:
             _log("OK", f"{comfy_name:<16s} -> {forge_name}")
+            found_any = True
         else:
-            _log("SKIP", f"{comfy_name:<16s} -- not found")
+            _log("--", f"{comfy_name:<16s}    (not in your ComfyUI)")
+
+    if not found_any:
+        print("\n  No model folders found in ComfyUI. Is it a fresh install?")
+        print("  The YAML will be written anyway — folders will be picked up once created.")
 
     dest = forge_root / "extra_model_paths.yaml"
 
@@ -495,26 +513,13 @@ def write_yaml(
 # Junction symlinks (--symlinks)
 # ---------------------------------------------------------------------------
 
-def _is_admin() -> bool:
-    if os.name != "nt":
-        return os.getuid() == 0
-    try:
-        return bool(ctypes.windll.shell32.IsUserAnAdmin())  # type: ignore[attr-defined]
-    except Exception:
-        return False
-
-
 def create_junctions(
     forge_root: Path,
     comfyui_root: Path,
     dry_run: bool,
 ) -> None:
-    if not _is_admin():
-        print("\n  WARN Not running as Administrator — junctions may fail.")
-        print("       Right-click your terminal and choose 'Run as administrator'.\n")
-
     models = forge_root / "models"
-    if not models.is_dir():
+    if not dry_run and not models.is_dir():
         models.mkdir(parents=True, exist_ok=True)
 
     _header("Creating junction links:")
@@ -588,14 +593,30 @@ def main() -> None:
         comfyui, forge = detect_installations()
 
         if comfyui is None:
-            print("\n  Could not find ComfyUI. Exiting.")
+            print("\n  Could not find ComfyUI.")
+            print("  Make sure ComfyUI is installed and has a 'models' folder inside it.")
             sys.exit(1)
         if forge is None:
-            print("\n  Could not find Forge Neo. Exiting.")
+            print("\n  Could not find Forge Neo.")
+            print("  Make sure Forge Neo is installed and has a 'webui.bat' file inside it.")
             sys.exit(1)
 
         _log("", f"ComfyUI:   {comfyui}")
         _log("", f"Forge Neo: {forge}")
+
+        # Second check for first-run guard: now that we know the actual forge
+        # path, skip if already configured (covers the case where the script
+        # lives outside the Forge Neo folder).
+        if not args.force and not args.dry_run:
+            yaml_path = forge / "extra_model_paths.yaml"
+            if yaml_path.is_file():
+                try:
+                    if "comfyui:" in yaml_path.read_text(encoding="utf-8"):
+                        print(f"\n  Already configured: {yaml_path}")
+                        print("  Use --force to re-run setup.")
+                        return
+                except OSError:
+                    pass
 
         write_yaml(forge, comfyui, args.dry_run)
 
@@ -604,8 +625,8 @@ def main() -> None:
 
         if not args.dry_run:
             print("\nRestart Forge Neo to load ComfyUI models.")
-            print("\nTo auto-run on every launch, add this line to webui-user.bat")
-            print("(before \"call webui.bat\"):\n")
+            print("\nTo auto-run on every launch, open webui-user.bat in Notepad")
+            print("and add this line right above \"call webui.bat\":\n")
             print("  python forge_neo_link_comfyui.py")
 
     except KeyboardInterrupt:
