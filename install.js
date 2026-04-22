@@ -123,7 +123,7 @@ module.exports = {
       method: "fs.share",
       params: {
         drive: {
-          outputs: "app/outputs"
+          outputs: "app/output"
         }
       }
     },
