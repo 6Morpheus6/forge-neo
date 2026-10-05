@@ -79,7 +79,6 @@ module.exports = {
     {
       method: "shell.run",
       params: {
-        venv_python: "3.11",
         venv: "venv",
         path: "app",
         message: "uv pip install pip hf-xet"
