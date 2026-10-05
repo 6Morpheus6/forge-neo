@@ -81,7 +81,7 @@ module.exports = {
       params: {
         venv: "venv",
         path: "app",
-        message: "uv pip install pip hf-xet"
+        message: "uv pip install pip hf-xet setuptools==69.5.1"
       }
     },
     {
