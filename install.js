@@ -4,6 +4,7 @@ module.exports = {
   },
   run: [
     {
+      when: "{{!exists('app')}}",
       method: "shell.run",
       params: {
         message: [
@@ -77,14 +78,6 @@ module.exports = {
       }
     },
     {
-      method: "shell.run",
-      params: {
-        venv: "venv",
-        path: "app",
-        message: "uv pip install pip hf-xet setuptools==69.5.1"
-      }
-    },
-    {
       id: "share",
       method: "fs.share",
       params: {
@@ -111,14 +104,6 @@ module.exports = {
       }
     },
     {
-      method: "shell.run",
-      params: {
-        message: [
-          "hf download lllyasviel/flux1-dev-bnb-nf4 flux1-dev-bnb-nf4-v2.safetensors --local-dir app/models/Stable-diffusion"
-        ]
-      }
-    },
-    {
       method: "fs.share",
       params: {
         drive: {
@@ -126,5 +111,21 @@ module.exports = {
         }
       }
     },
+    {
+      method: "shell.run",
+      params: {
+        venv: "venv",
+        path: "app",
+        message: "uv pip install hf-xet setuptools==69.5.1"
+      }
+    },
+    {
+      method: "shell.run",
+      params: {
+        message: [
+          "hf download lllyasviel/flux1-dev-bnb-nf4 flux1-dev-bnb-nf4-v2.safetensors --local-dir app/models/Stable-diffusion"
+        ]
+      }
+    }
   ]
 }
